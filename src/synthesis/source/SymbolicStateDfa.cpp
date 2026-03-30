@@ -1,6 +1,7 @@
 #include "SymbolicStateDfa.h"
 #include <algorithm>
 #include <bitset>
+#include <cassert>
 
 namespace Syft {
 
