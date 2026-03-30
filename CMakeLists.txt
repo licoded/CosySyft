@@ -12,11 +12,12 @@ set(CUDD_DIR "${PROJECT_SOURCE_DIR}/third_party/cudd")
 set(CUDD_INCLUDE_DIRS "${CUDD_DIR}/include")
 set(CUDD_LIBRARIES    "${CUDD_DIR}/lib/libcudd.a")
 
-# CLI11 (header-only argument parsing library)
-# Install with: brew install cli11  (macOS) or  apt install libcli11-dev  (Ubuntu)
-find_package(CLI11 REQUIRED CONFIG)
+# CLI11 — vendored under third_party/cli11/
+set(CLI11_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/cli11/include")
+add_library(cli11 INTERFACE)
+target_include_directories(cli11 INTERFACE "${CLI11_INCLUDE_DIR}")
 
-set(EXT_LIBRARIES_PATH ${CUDD_LIBRARIES} CLI11::CLI11)
+set(EXT_LIBRARIES_PATH ${CUDD_LIBRARIES} cli11)
 set(EXT_INCLUDE_PATH   ${CUDD_INCLUDE_DIRS})
 
 message(STATUS "CUDD_INCLUDE_DIRS: ${CUDD_INCLUDE_DIRS}")
