@@ -1,8 +1,6 @@
 #include "SymbolicStateDfa.h"
 #include <algorithm>
-
 #include <bitset>
-#include <CLI/TypeTools.hpp>
 
 namespace Syft {
 

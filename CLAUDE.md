@@ -4,14 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Syft is a C++ tool for **reactive synthesis from LTLf (Linear Temporal Logic on Finite traces) specifications**. It converts LTLf formulas to DFAs and solves two-player games to compute maximally permissive winning strategies.
+Syft is a C++ tool for **reactive synthesis from a DFA game**. It takes a DFA (the specification) and an input/output variable partition, then solves a two-player reachability game to determine if the agent has a winning strategy and, if so, extracts it as a Transducer.
 
 ## Build
 
-**Dependencies** (must be installed first): CUDD, MONA, Flex, Bison, Boost, and the `lydia` submodule.
+**Dependencies**: CUDD, CLI11, CMake ≥ 3.5, C++17.
 
 ```bash
-git submodule update --init --recursive
+# CUDD (required)
+# macOS: brew install cudd
+# CLI11 (required; one of:)
+# macOS: brew install cli11
+# OR: git submodule update --init submodules/lydia  (only the CLI11 headers are used)
+
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
@@ -22,53 +27,71 @@ Executable: `build/bin/Syftmax`
 ## Running
 
 ```bash
-# Single strategy synthesis
-./build/bin/Syftmax -f <formula.ltlf> -p <partition.part>
+# Check realizability and extract a single winning strategy
+./build/bin/Syftmax -d spec.dfa -p spec.part
 
-# Maximally permissive strategy
-./build/bin/Syftmax -f <formula.ltlf> -p <partition.part> --maxset
+# Compute maximally permissive strategy instead
+./build/bin/Syftmax -d spec.dfa -p spec.part --maxset
 
-# State encoding options
-./build/bin/Syftmax -f <formula.ltlf> -p <partition.part> --fanin
-./build/bin/Syftmax -f <formula.ltlf> -p <partition.part> --fanout
+# Environment player moves first (default: Agent moves first)
+./build/bin/Syftmax -d spec.dfa -p spec.part -e
+
+# Alternative state encodings (may improve BDD performance)
+./build/bin/Syftmax -d spec.dfa -p spec.part --fanin
+./build/bin/Syftmax -d spec.dfa -p spec.part --fanout
 ```
 
-**Input formats:**
-- `.ltlf` file: single line LTLf formula
-- `.part` file: variable partition, e.g.:
-  ```
-  .inputs: X1 X2
-  .outputs: Y1 Y2
-  ```
+## Input File Formats
+
+**`.dfa` file** — the game specification:
+```
+# Lines starting with # are comments
+.vars: X1 X2 Y1 Y2          # alphabet variables in order (inputs + outputs)
+.states: 4                   # total state count (optional; inferred if omitted)
+.initial: 0                  # initial state (0-indexed)
+.accepting: 3                # accepting states, space-separated
+.transitions:
+# from_state  minterm  to_state
+# minterm is a binary string of length |vars|:
+#   character at position j = value of vars[j] (0 or 1)
+0 0000 1
+0 0001 1
+0 0010 2
+...
+```
+
+**`.part` file** — input/output variable partition:
+```
+.inputs: X1 X2
+.outputs: Y1 Y2
+```
 
 ## Architecture
 
-The pipeline in `src/Main.cpp` flows through these stages:
+The synthesis pipeline in `src/Main.cpp`:
 
-1. **Parse** formula + partition files
-2. **Build DFA** via `ExplicitStateDfaMona` (wraps Lydia/MONA)
-3. **Convert DFA representations**:
-   - `ExplicitStateDfaMona` → `ExplicitStateDfa` (explicit states, symbolic transitions as ADDs)
-   - `ExplicitStateDfa` → `SymbolicStateDfa` (log-encoded states using BDDs)
-4. **Solve game** via `ReachabilityMaxSetSynthesizer` (backward fixpoint over BDDs)
-5. **Extract strategy**: `AbstractSingleStrategy()` → `Transducer`, or `AbstractMaxSet()` for permissive strategies
+1. **Parse** `.dfa` and `.part` files
+2. **Build `ExplicitStateDfa`** via `from_explicit_table()` — constructs one CUDD ADD per state using Shannon expansion; the ADD maps an alphabet variable assignment to the successor state index
+3. **Convert to `SymbolicStateDfa`** — log-encodes states in `ceil(log2(n))` BDD variables; three strategies: standard, `--fanin`, `--fanout`
+4. **Solve game** via `ReachabilityMaxSetSynthesizer::run()` — backward BDD fixpoint
+5. **Extract strategy**: `AbstractSingleStrategy()` → `Transducer`, or `AbstractMaxSet()` for maximally permissive strategies
 
 ### Key Classes
 
-- **`VarMgr`** (`src/synthesis/header/VarMgr.h`): Central BDD variable manager. Tracks named input/output variables and per-automaton state variables. Nearly every class holds a shared pointer to it.
+- **`VarMgr`** (`src/synthesis/header/VarMgr.h`): Central CUDD variable manager shared by everything. Tracks named input/output variables and per-automaton state variables.
 
-- **`SymbolicStateDfa`** (`src/synthesis/header/SymbolicStateDfa.h`): Fully symbolic DFA with log-encoded states. Supports `product()` for combining multiple DFAs. Has three encoding strategies: standard, fanin, fanout.
+- **`ExplicitStateDfa`** (`src/synthesis/header/ExplicitStateDfa.h`): DFA with explicit states and symbolic transitions (one CUDD ADD per state). Entry point: `from_explicit_table()`.
 
-- **`DfaGameSynthesizer`** (`src/synthesis/header/DfaGameSynthesizer.h`): Abstract base for game solvers. Implements `preimage()` and `synthesize_strategy()` using BDD quantification.
+- **`SymbolicStateDfa`** (`src/synthesis/header/SymbolicStateDfa.h`): Fully symbolic DFA with log-encoded states. `product()` combines multiple DFAs.
 
-- **`ReachabilityMaxSetSynthesizer`** (`src/synthesis/header/ReachabilityMaxSetSynthesizer.h`): Concrete solver for reachability games. `run()` computes winning region; `AbstractMaxSet()` computes deferring + non-deferring strategy sets.
+- **`DfaGameSynthesizer`** (`src/synthesis/header/DfaGameSynthesizer.h`): Abstract base implementing `preimage()` and `synthesize_strategy()` over BDDs.
 
-- **`Transducer`** (`src/synthesis/header/Transducer.h`): Moore machine representing the winning strategy. Can export to `.dot` format.
+- **`ReachabilityMaxSetSynthesizer`** (`src/synthesis/header/ReachabilityMaxSetSynthesizer.h`): Concrete solver. `AbstractSingleStrategy()` returns a `Transducer`; `AbstractMaxSet()` returns deferring + non-deferring strategy sets.
 
-- **`Quantification`** (`src/synthesis/header/Quantification.h`): Strategy for variable quantification in preimage computation — `Exists`, `Forall`, `ForallExists`, `ExistsForall`.
+- **`Transducer`** (`src/synthesis/header/Transducer.h`): Moore machine representing the winning strategy. Exports to `.dot` via `dump_dot()`.
 
-- **`InputOutputPartition`** (`src/synthesis/header/InputOutputPartition.h`): Reads `.part` files; separates controllable (output) from uncontrollable (input) variables.
+- **`Quantification`** (`src/synthesis/header/Quantification.h`): Variable quantification variants (`Exists`, `Forall`, `ForallExists`, `ExistsForall`) used in preimage computation.
 
 ## CMake Modules
 
-Custom finders in `CMakeModules/`: `Findcudd.cmake`, `Findmona.cmake`. These locate CUDD and MONA headers/libraries on the system.
+`CMakeModules/Findcudd.cmake` locates CUDD headers and libraries on the system.

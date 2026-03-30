@@ -10,7 +10,6 @@
 #include <cuddObj.hh>
 
 #include "ExplicitStateDfa.h"
-#include "ExplicitStateDfaMona.h"
 
 namespace Syft {
     /**
