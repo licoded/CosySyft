@@ -11,11 +11,11 @@ Syft is a C++ tool for **reactive synthesis from a DFA game**. It takes a DFA (t
 **Dependencies**: CUDD, CLI11, CMake ≥ 3.5, C++17.
 
 ```bash
-# CUDD (required)
-# macOS: brew install cudd
-# CLI11 (required; one of:)
-# macOS: brew install cli11
-# OR: git submodule update --init submodules/lydia  (only the CLI11 headers are used)
+# macOS
+brew install cudd cli11
+
+# Ubuntu
+apt install libcudd-dev libcli11-dev
 
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
