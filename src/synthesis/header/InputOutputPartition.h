@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief A partition of variables into input and output variables.

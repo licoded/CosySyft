@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace Syft {
+namespace CosySyft {
 
 DfaGameSynthesizer::DfaGameSynthesizer(SymbolicStateDfa spec,
 				       Player starting_player,

@@ -6,7 +6,7 @@
 #include "Synthesizer.h"
 #include "Transducer.h"
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief A synthesizer for a game whose arena is a symbolic-state DFA.

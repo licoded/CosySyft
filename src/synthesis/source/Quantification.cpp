@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace Syft {
+namespace CosySyft {
 
 CUDD::BDD NoQuantification::apply(const CUDD::BDD& bdd) const {
   return bdd;

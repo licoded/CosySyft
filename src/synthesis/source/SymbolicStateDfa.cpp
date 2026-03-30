@@ -5,7 +5,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace Syft {
+namespace CosySyft {
 
 SymbolicStateDfa::SymbolicStateDfa(std::shared_ptr<VarMgr> var_mgr)
   : var_mgr_(std::move(var_mgr))

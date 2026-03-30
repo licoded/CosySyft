@@ -3,7 +3,7 @@
 
 #include <cuddObj.hh>
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief Abstract class representing a quantification operation on BDDs.

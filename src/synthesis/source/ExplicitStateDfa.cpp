@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace Syft {
+namespace CosySyft {
 
 ExplicitStateDfa::ExplicitStateDfa(std::shared_ptr<VarMgr> var_mgr)
     : var_mgr_(std::move(var_mgr)) {}
@@ -99,4 +99,4 @@ void ExplicitStateDfa::dump_dot(const std::string& filename) const {
   var_mgr_->dump_dot(transition_function_, labels, filename);
 }
 
-}  // namespace Syft
+}  // namespace CosySyft

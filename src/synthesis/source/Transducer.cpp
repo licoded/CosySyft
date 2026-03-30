@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-namespace Syft {
+namespace CosySyft {
 
 Transducer::Transducer(std::shared_ptr<VarMgr> var_mgr,
                        std::vector<int> initial_vector,

@@ -5,7 +5,7 @@
 #include <vector>
 
 
-namespace Syft {
+namespace CosySyft {
 
     std::vector<std::string> split(const std::string& str, const std::string& delimiter = " ");
     std::string trim(const std::string& str);

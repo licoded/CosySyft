@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "String_utilities.h"
 
-namespace Syft {
+namespace CosySyft {
 
 VarMgr::VarMgr() {
   mgr_ = std::make_shared<CUDD::Cudd>();

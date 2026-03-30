@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief Stopwatch for timing executions.

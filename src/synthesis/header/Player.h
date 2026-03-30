@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-namespace Syft {
+namespace CosySyft {
 
 enum class Player {
   Agent,

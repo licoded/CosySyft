@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace Syft {
+namespace CosySyft {
 
 Stopwatch::Stopwatch() {
   is_started_ = false;

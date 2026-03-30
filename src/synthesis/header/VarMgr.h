@@ -8,7 +8,7 @@
 #include "cuddObj.hh"
 #include "cudd.h"
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief A dictionary that maps variable names to indices and vice versa.

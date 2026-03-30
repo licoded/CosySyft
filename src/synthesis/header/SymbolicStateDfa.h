@@ -11,7 +11,7 @@
 
 #include "ExplicitStateDfa.h"
 
-namespace Syft {
+namespace CosySyft {
     /**
      * \brief A DFA with symbolic states and transitions.
      */

@@ -3,7 +3,7 @@
 
 #include "DfaGameSynthesizer.h"
 
-namespace Syft {
+namespace CosySyft {
     struct MaxSet{
         CUDD::BDD deferring_strategy;
         CUDD::BDD nondeferring_strategy;

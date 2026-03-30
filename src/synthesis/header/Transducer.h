@@ -10,7 +10,7 @@
 #include "Player.h"
 #include "VarMgr.h"
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief A symbolic tranducer representing a winning strategy for a game.

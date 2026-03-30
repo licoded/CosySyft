@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <string>
 
-namespace Syft {
+namespace CosySyft {
 
     std::vector<std::string> split(const std::string& str, const std::string& delimiter) {
         std::vector<std::string> tokens;

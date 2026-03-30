@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace Syft {
+namespace CosySyft {
 
     ReachabilityMaxSetSynthesizer::ReachabilityMaxSetSynthesizer(SymbolicStateDfa spec,
                                                      Player starting_player, Player protagonist_player,

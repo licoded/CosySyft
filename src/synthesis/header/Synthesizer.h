@@ -6,7 +6,7 @@
 #include "Transducer.h"
 #include <tuple>
 
-namespace Syft {
+namespace CosySyft {
     struct SynthesisResult{
         bool realizability;
         CUDD::BDD winning_states;

@@ -8,7 +8,7 @@
 
 #include "VarMgr.h"
 
-namespace Syft {
+namespace CosySyft {
 
 /**
  * \brief A DFA with explicit states and symbolic transitions.
@@ -86,6 +86,6 @@ class ExplicitStateDfa {
   void dump_dot(const std::string& filename) const;
 };
 
-}  // namespace Syft
+}  // namespace CosySyft
 
 #endif  // EXPLICIT_STATE_DFA_H
