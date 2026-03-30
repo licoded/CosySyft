@@ -24,6 +24,8 @@
 *.la
 *.a
 *.lib
+# Vendored pre-built libraries are tracked despite the *.a rule above
+!third_party/cudd/lib/libcudd.a
 
 # Executables
 *.exe
