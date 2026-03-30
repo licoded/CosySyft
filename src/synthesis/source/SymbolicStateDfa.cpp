@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <bitset>
 #include <cassert>
+#include <cmath>
+#include <stdexcept>
 
 namespace Syft {
 
